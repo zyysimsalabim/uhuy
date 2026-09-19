@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Qur'an Digital Minimalis</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for Arabic & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .font-arabic { font-family: 'Amiri', serif; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen transition-colors duration-300">
+
+    <!-- LOGIN PAGE VIEW -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-xl relative overflow-hidden backdrop-blur-lg">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-brand-500/10 text-brand-600 dark:text-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-brand-500/20">
+                    <i data-lucide="book-open" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight">Al-Qur'an Digital</h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Silakan masuk untuk melanjutkan bacaan Anda</p>
+            </div>
+
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Nama / Email</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="username-input" required placeholder="Ahmad Hidayat" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none text-sm transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Kata Sandi</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" required placeholder="••••••••" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none text-sm transition">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2">
+                    <span>Masuk Akun</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white dark:bg-slate-900 px-2 text-slate-400">Atau</span></div>
+            </div>
+
+            <button onclick="loginAsGuest()" 
+                class="w-full py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition">
+                Masuk sebagai Tamu
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP SCREEN (Hidden by default) -->
+    <div id="main-app" class="hidden min-h-screen flex flex-col md:flex-row">
+
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-shrink-0 flex flex-col justify-between p-4 md:h-screen sticky top-0 z-30">
+            <div>
+                <!-- Brand Header -->
+                <div class="flex items-center justify-between p-2 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-brand-500/10 text-brand-600 dark:text-brand-500 rounded-xl flex items-center justify-center border border-brand-500/20">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-slate-900 dark:text-white leading-tight">Al-Qur'an</h2>
+                            <span class="text-xs text-slate-400">Digital Reader</span>
+                        </div>
+                    </div>
+                    <!-- Mobile Dark Toggle -->
+                    <button onclick="toggleDarkMode()" class="md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="space-y-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" 
+                        class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-brand-600 bg-brand-500/10 dark:text-brand-400">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('surah-list')" id="nav-surah-list" 
+                        class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50">
+                        <i data-lucide="list" class="w-4 h-4"></i> Daftar Surah
+                    </button>
+                    <button onclick="switchTab('bookmarks')" id="nav-bookmarks" 
+                        class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50">
+                        <i data-lucide="bookmark" class="w-4 h-4"></i> Terakhir Dibaca
+                    </button>
+                </nav>
+            </div>
+
+            <!-- User Info & Theme Toggle -->
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <div class="hidden md:flex items-center justify-between px-2">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Mode Tampilan</span>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-100 dark:bg-slate-800/60">
+                    <div class="flex items-center gap-2.5">
+                        <div id="user-avatar" class="w-8 h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs">
+                            A
+                        </div>
+                        <div class="overflow-hidden">
+                            <p id="user-display-name" class="text-xs font-semibold truncate text-slate-800 dark:text-slate-200">Ahmad Hidayat</p>
+                            <span class="text-[10px] text-slate-400 block -mt-0.5">Pengguna</span>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" title="Keluar" class="p-1.5 text-slate-400 hover:text-red-500 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full space-y-6">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <!-- Banner Welcome -->
+                <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-emerald-800 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+                    <div class="relative z-10 max-w-lg">
+                        <span class="inline-block px-3 py-1 bg-white/10 backdrop-blur-md text-xs font-medium rounded-full mb-3 text-emerald-100 border border-white/10">
+                            Assalamu'alaikum 🙏
+                        </span>
+                        <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-2" id="welcome-message">Selamat Datang</h2>
+                        <p class="text-emerald-100 text-sm leading-relaxed mb-6">
+                            "Membaca Al-Qur'an adalah ketenangan bagi hati. Mulailah hari Anda dengan lantunan ayat-ayat suci."
+                        </p>
+                        <button onclick="switchTab('surah-list')" class="px-5 py-2.5 bg-white text-brand-800 hover:bg-emerald-50 font-semibold rounded-xl text-sm transition shadow-md">
+                            Mulai Membaca
+                        </button>
+                    </div>
+                    <!-- Decorative Arabic SVG outline -->
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white font-arabic text-9xl select-none pointer-events-none">
+                        القرآن
+                    </div>
+                </div>
+
+                <!-- Dashboard Widgets Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Quick Player Widget -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            <span>Pemutar Suara</span>
+                            <i data-lucide="volume-2" class="w-4 h-4 text-brand-500"></i>
+                        </div>
+                        <div id="quick-player-info" class="text-sm">
+                            <p class="font-bold text-slate-800 dark:text-slate-100" id="qp-title">Belum Ada Surah</p>
+                            <p class="text-xs text-slate-400" id="qp-subtitle">Pilih surah untuk mendengarkan audio</p>
+                        </div>
+                        <button onclick="toggleAudioPlay()" id="qp-btn" disabled 
+                            class="w-full py-2 bg-brand-600 text-white text-xs font-semibold rounded-xl disabled:opacity-50 flex items-center justify-center gap-2">
+                            <i data-lucide="play" class="w-4 h-4"></i> Putar Audio
+                        </button>
+                    </div>
+
+                    <!-- Quick Bookmark Widget -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            <span>Terakhir Dibaca</span>
+                            <i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i>
+                        </div>
+                        <div id="last-read-container">
+                            <p class="font-bold text-slate-800 dark:text-slate-100" id="last-read-title">Surah Al-Fatihah</p>
+                            <p class="text-xs text-slate-400" id="last-read-sub">Ayat 1</p>
+                        </div>
+                        <button onclick="resumeLastRead()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                            Lanjutkan Bacaan
+                        </button>
+                    </div>
+
+                    <!-- Total Surah Stats -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            <span>Info Qur'an</span>
+                            <i data-lucide="book" class="w-4 h-4 text-emerald-500"></i>
+                        </div>
+                        <div class="my-2">
+                            <span class="text-3xl font-extrabold text-slate-900 dark:text-white">114</span>
+                            <span class="text-xs text-slate-400 ml-1">Surah (30 Juz)</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Audio Tilawah Qari Mishary Rashid Alafasy</p>
+                    </div>
+                </div>
+
+                <!-- Popular Surahs Quick Access -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Surah Sering Dibaca</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button onclick="openSurah(1)" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-brand-500/50 rounded-2xl text-left transition shadow-sm group">
+                            <span class="text-xs text-brand-600 dark:text-brand-400 font-bold block mb-1">Surah #1</span>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-brand-600 transition">Al-Fatihah</h4>
+                            <span class="text-[11px] text-slate-400">7 Ayat • Pembukaan</span>
+                        </button>
+                        <button onclick="openSurah(36)" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-brand-500/50 rounded-2xl text-left transition shadow-sm group">
+                            <span class="text-xs text-brand-600 dark:text-brand-400 font-bold block mb-1">Surah #36</span>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-brand-600 transition">Yasin</h4>
+                            <span class="text-[11px] text-slate-400">83 Ayat • Makkiyah</span>
+                        </button>
+                        <button onclick="openSurah(67)" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-brand-500/50 rounded-2xl text-left transition shadow-sm group">
+                            <span class="text-xs text-brand-600 dark:text-brand-400 font-bold block mb-1">Surah #67</span>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-brand-600 transition">Al-Mulk</h4>
+                            <span class="text-[11px] text-slate-400">30 Ayat • Kerajaan</span>
+                        </button>
+                        <button onclick="openSurah(18)" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-brand-500/50 rounded-2xl text-left transition shadow-sm group">
+                            <span class="text-xs text-brand-600 dark:text-brand-400 font-bold block mb-1">Surah #18</span>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-brand-600 transition">Al-Kahf</h4>
+                            <span class="text-[11px] text-slate-400">110 Ayat • Gua</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: SURAH LIST -->
+            <section id="tab-surah-list" class="tab-content hidden space-y-4">
+                <!-- Search & Filters -->
+                <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-surah" oninput="filterSurahs()" placeholder="Cari nama surah atau nomor..." 
+                            class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                    </div>
+                    <span id="surah-count-badge" class="text-xs text-slate-400 font-medium self-end md:self-auto">Menampilkan 114 Surah</span>
+                </div>
+
+                <!-- Grid of Surahs -->
+                <div id="surah-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <!-- Dynamic Surah cards populated by JS -->
+                </div>
+            </section>
+
+            <!-- TAB 3: BOOKMARKS -->
+            <section id="tab-bookmarks" class="tab-content hidden space-y-4">
+                <h3 class="text-lg font-bold">Terakhir Dibaca & Penanda</h3>
+                <div id="bookmarks-container" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 4: SURAH DETAIL READER (Dynamic view) -->
+            <section id="tab-surah-detail" class="tab-content hidden space-y-6">
+                <!-- Detail Header Nav -->
+                <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 sticky top-16 md:top-4 z-20 shadow-sm">
+                    <button onclick="switchTab('surah-list')" class="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition font-medium">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Daftar Surah</span>
+                    </button>
+                    <div class="text-center">
+                        <h2 id="detail-surah-title" class="font-bold text-slate-900 dark:text-white text-base">Al-Fatihah</h2>
+                        <span id="detail-surah-sub" class="text-xs text-slate-400">7 Ayat • Mekkah</span>
+                    </div>
+                    <button onclick="toggleAudioPlay()" id="btn-play-surah" 
+                        class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition">
+                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                        <span id="btn-play-text">Bacakan Audio</span>
+                    </button>
+                </div>
+
+                <!-- Bismillah Card -->
+                <div class="text-center py-6 bg-brand-500/5 dark:bg-slate-900/40 rounded-3xl border border-brand-500/10">
+                    <p class="font-arabic text-2xl md:text-3xl text-brand-700 dark:text-brand-400">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+                    <p class="text-xs text-slate-400 mt-2">"Dengan menyebut nama Allah Yang Maha Pengasih lagi Maha Penyayang"</p>
+                </div>
+
+                <!-- Ayah List Container -->
+                <div id="ayah-list" class="space-y-4">
+                    <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- AUDIO PLAYER STICKY BAR (Global) -->
+    <div id="sticky-player" class="fixed bottom-0 inset-x-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 z-40 hidden shadow-2xl">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-10 h-10 bg-brand-600 text-white rounded-xl flex items-center justify-center font-bold flex-shrink-0">
+                    <i data-lucide="music" class="w-5 h-5"></i>
+                </div>
+                <div class="truncate">
+                    <h4 id="audio-surah-name" class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">Surah Al-Fatihah</h4>
+                    <p class="text-xs text-slate-400 truncate">Qari: Mishary Rashid Alafasy</p>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleAudioPlay()" id="global-play-btn" class="w-10 h-10 bg-brand-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-600/30 hover:scale-105 transition">
+                    <i data-lucide="play" id="global-play-icon" class="w-5 h-5"></i>
+                </button>
+                <audio id="quran-audio" ontimeupdate="updateAudioProgress()" onended="audioEnded()"></audio>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let allSurahs = [];
+        let currentSurahData = null;
+        let currentUser = null;
+        let isPlaying = false;
+        let lastRead = JSON.parse(localStorage.getItem('quran_last_read')) || { surahId: 1, surahName: 'Al-Fatihah', ayah: 1 };
+
+        // DOM Loaded
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            checkExistingSession();
+            fetchSurahList();
+            updateLastReadUI();
+        });
+
+        // Toggle Dark Mode
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // Auth Logic
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username-input').value.trim();
+            if (!username) return;
+            loginUser(username);
+        }
+
+        function loginAsGuest() {
+            loginUser('Tamu');
+        }
+
+        function loginUser(name) {
+            currentUser = { name: name };
+            localStorage.setItem('quran_user', JSON.stringify(currentUser));
+            showMainApp();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('quran_user');
+            currentUser = null;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        function checkExistingSession() {
+            const saved = localStorage.getItem('quran_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showMainApp();
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            
+            const name = currentUser ? currentUser.name : 'Tamu';
+            document.getElementById('welcome-message').innerText = `Selamat Datang, ${name}`;
+            document.getElementById('user-display-name').innerText = name;
+            document.getElementById('user-avatar').innerText = name.charAt(0).toUpperCase();
+        }
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-brand-600', 'bg-brand-500/10', 'dark:text-brand-400');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400');
+            });
+
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('text-brand-600', 'bg-brand-500/10', 'dark:text-brand-400');
+                activeNav.classList.remove('text-slate-600', 'dark:text-slate-400');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fetch Surah List API (equran.id Public API)
+        async function fetchSurahList() {
+            const grid = document.getElementById('surah-grid');
+            grid.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400">Memuat daftar surah...</div>';
+
+            try {
+                const res = await fetch('https://equran.id/api/v2/surat');
+                const result = await res.json();
+                allSurahs = result.data;
+                renderSurahGrid(allSurahs);
+            } catch (err) {
+                console.error("Gagal mengambil data surah:", err);
+                grid.innerHTML = '<div class="col-span-full py-12 text-center text-red-500">Gagal memuat data. Periksa koneksi internet Anda.</div>';
+            }
+        }
+
+        function renderSurahGrid(surahs) {
+            const grid = document.getElementById('surah-grid');
+            document.getElementById('surah-count-badge').innerText = `Menampilkan ${surahs.length} Surah`;
+
+            if (surahs.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400">Surah tidak ditemukan.</div>';
+                return;
+            }
+
+            grid.innerHTML = surahs.map(s => `
+                <div onclick="openSurah(${s.nomor})" 
+                    class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between hover:border-brand-500/50 hover:shadow-md transition cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold flex items-center justify-center text-xs group-hover:bg-brand-600 group-hover:text-white transition">
+                            ${s.nomor}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-brand-600 transition text-sm">${s.namaLatin}</h4>
+                            <p class="text-xs text-slate-400">${s.arti} • ${s.jumlahAyat} Ayat</p>
+                        </div>
+                    </div>
+                    <span class="font-arabic text-xl text-slate-700 dark:text-slate-300">${s.nama}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterSurahs() {
+            const query = document.getElementById('search-surah').value.toLowerCase();
+            const filtered = allSurahs.filter(s => 
+                s.namaLatin.toLowerCase().includes(query) || 
+                s.nomor.toString().includes(query)
+            );
+            renderSurahGrid(filtered);
+        }
+
+        // Open Surah Detail
+        async function openSurah(nomor) {
+            switchTab('surah-detail');
+            const ayahContainer = document.getElementById('ayah-list');
+            ayahContainer.innerHTML = '<div class="py-12 text-center text-slate-400">Memuat teks surah dan audio...</div>';
+
+            try {
+                const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
+                const result = await res.json();
+                currentSurahData = result.data;
+
+                // Update Header
+                document.getElementById('detail-surah-title').innerText = `${currentSurahData.nomor}. ${currentSurahData.namaLatin} (${currentSurahData.nama})`;
+                document.getElementById('detail-surah-sub').innerText = `${currentSurahData.jumlahAyat} Ayat • ${currentSurahData.tempatTurun}`;
+
+                // Setup Audio URL (Full Surah Audio from Mishary Rashid Alafasy)
+                const audioUrl = currentSurahData.audioFull['05']; // 05 is Mishary Rashid Alafasy
+                const audioElement = document.getElementById('quran-audio');
+                audioElement.src = audioUrl;
+
+                // Update Dashboard Quick Player Info
+                document.getElementById('qp-title').innerText = currentSurahData.namaLatin;
+                document.getElementById('qp-subtitle').innerText = `${currentSurahData.jumlahAyat} Ayat • Audio Siap`;
+                document.getElementById('qp-btn').disabled = false;
+
+                // Render Ayahs
+                ayahContainer.innerHTML = currentSurahData.ayat.map(a => `
+                    <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-4 shadow-sm">
+                        <div class="flex items-center justify-between text-xs text-slate-400 border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-600 dark:text-slate-300">
+                                Ayat ${a.nomorAyat}
+                            </span>
+                            <button onclick="bookmarkAyah(${currentSurahData.nomor}, '${currentSurahData.namaLatin}', ${a.nomorAyat})" 
+                                class="hover:text-amber-500 flex items-center gap-1 transition">
+                                <i data-lucide="bookmark" class="w-4 h-4"></i> Tandai
+                            </button>
+                        </div>
+                        
+                        <!-- Arabic Text -->
+                        <p class="font-arabic text-2xl md:text-3xl text-right leading-loose text-slate-900 dark:text-slate-100 pt-2">
+                            ${a.teksArab}
+                        </p>
+
+                        <!-- Transliteration & Translation -->
+                        <div class="space-y-1 text-sm pt-2">
+                            <p class="text-brand-600 dark:text-brand-400 font-medium text-xs italic">${a.teksLatin}</p>
+                            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">${a.teksIndonesia}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                lucide.createIcons();
+
+            } catch (err) {
+                console.error("Gagal memuat detail surah:", err);
+                ayahContainer.innerHTML = '<div class="py-12 text-center text-red-500">Gagal memuat ayat surah.</div>';
+            }
+        }
+
+        // Audio Player Handler
+        function toggleAudioPlay() {
+            const audio = document.getElementById('quran-audio');
+            if (!audio.src) return;
+
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+            } else {
+                audio.play();
+                isPlaying = true;
+            }
+            updateAudioUI();
+        }
+
+        function updateAudioUI() {
+            const playText = document.getElementById('btn-play-text');
+            const globalIcon = document.getElementById('global-play-icon');
+            const stickyBar = document.getElementById('sticky-player');
+
+            if (isPlaying) {
+                if (playText) playText.innerText = "Jeda Audio";
+                if (globalIcon) globalIcon.setAttribute('data-lucide', 'pause');
+                stickyBar.classList.remove('hidden');
+                if (currentSurahData) {
+                    document.getElementById('audio-surah-name').innerText = `Surah ${currentSurahData.namaLatin}`;
+                }
+            } else {
+                if (playText) playText.innerText = "Bacakan Audio";
+                if (globalIcon) globalIcon.setAttribute('data-lucide', 'play');
+            }
+            lucide.createIcons();
+        }
+
+        function audioEnded() {
+            isPlaying = false;
+            updateAudioUI();
+        }
+
+        // Bookmark Handler
+        function bookmarkAyah(surahId, surahName, ayah) {
+            lastRead = { surahId, surahName, ayah };
+            localStorage.setItem('quran_last_read', JSON.stringify(lastRead));
+            updateLastReadUI();
+            alert(`Tanda disimpan: Surah ${surahName} Ayat ${ayah}`);
+        }
+
+        function updateLastReadUI() {
+            document.getElementById('last-read-title').innerText = lastRead.surahName;
+            document.getElementById('last-read-sub').innerText = `Ayat ${lastRead.ayah}`;
+
+            const container = document.getElementById('bookmarks-container');
+            container.innerHTML = `
+                <div onclick="openSurah(${lastRead.surahId})" class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between cursor-pointer hover:border-brand-500/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold">
+                            <i data-lucide="bookmark" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100">${lastRead.surahName}</h4>
+                            <p class="text-xs text-slate-400">Terakhir dibaca sampai Ayat ${lastRead.ayah}</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function resumeLastRead() {
+            openSurah(lastRead.surahId);
+        }
+    </script>
+</body>
+</html>
